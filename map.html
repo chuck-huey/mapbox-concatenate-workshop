@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset='utf-8' />
     <title>Concatenate Map</title>
@@ -25,6 +26,7 @@
     </style>
 
   </head>
+
   <body>
 
     <!-- Add a #map element to the page, to serve as the map's container -->
@@ -32,20 +34,50 @@
 
     <script>
 
-    // Set an access token to allow the browser to load the map from our account
-    // TODO replace this with YOUR access token!
-    mapboxgl.accessToken = 'pk.eyJ1IjoidmFraWxhIiwiYSI6ImNrMWhuZnAwcjFjdWkzbm81M3pudXprcHIifQ.9As-ktwk5eelXbGP2z22HQ';
+      // Set an access token to allow the browser to load the map from our account
+      // TODO replace this with YOUR access token!
+      mapboxgl.accessToken = 'pk.eyJ1IjoiY2h1Y2staHVleSIsImEiOiJjazFqMjducXgwNjhqM25tdTE2MmxiY3ozIn0.R8Y-O3ZC1YIkE6KPTBdkAA';
 
-    // Instantiate a new Map object to load the map itself
-    const map = new mapboxgl.Map({
-      style: 'mapbox://styles/mapbox/streets-v11', //TODO replace this with YOUR style URL! This tells the map which style to use
-      container: 'map', // id of the container div we created above
-      center: [3.39663, 6.44392], // the location to display when the map first loads
-      zoom: 10 // the zoom level to display when the map first loads
-    });
+      // Instantiate a new Map object to load the map itself
+      const map = new mapboxgl.Map({
+        style: 'mapbox://styles/chuck-huey/ck1j5acuq11481cmj9v3kxfnv', //TODO replace this with YOUR style URL! This tells the map which style to use
+        container: 'map', // id of the container div we created above
+        center: [3.39663, 6.44392], // the location to display when the map first loads
+        zoom: 10 // the zoom level to display when the map first loads
+      });
 
-    // Part 4 code will go here
+      // Part 4 code will go here
+      map.on('click', (event) => {
+        const clickedPoint = [event.lngLat.lng, event.lngLat.lat];
 
+        const location = {
+          center: clickedPoint,
+          zoom: map.getZoom(),
+          pitch: map.getPitch(),
+          bearing: map.getBearing(),
+        };
+
+        map.flyTo(location);
+
+        const clicked = {
+          location: location
+        };
+
+        const clickedFeatures = map.queryRenderedFeatures(event.point, { layers: ['chukky - circle'] });
+
+        if (clickedFeatures.length > 0) {
+          clicked.title = clickedFeatures[0].properties.title;
+          clicked.description = clickedFeatures[0].properties.description;
+
+          const popup = new mapboxgl.Popup() // create the popup
+            .setLngLat(clicked.location.center) // position it at the clicked point
+            .setHTML('<h3>' + clicked.title + '</h3><p>' + clicked.description + '</p>') // add some HTML content
+            .addTo(map); // place the popup on the map
+        }
+
+        console.log(JSON.stringify(clicked, null, 2));
+      });
     </script>
   </body>
+
 </html>
